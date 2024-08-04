@@ -1,5 +1,7 @@
 const express = require("express");
+
 const { resWrapper } = require("../utils");
+const { jwtAuthentication } = require("../middlewares/authentication");
 
 const router = express.Router();
 
@@ -9,10 +11,12 @@ const courseRouter = require("./course");
 const categoryRouter = require("./category");
 const enrollmentRouter = require("./enrollment");
 
+
+
 router.use("/admin", adminRouter)
-router.use("/course", courseRouter)
-router.use("/category", categoryRouter)
-router.use("/enrollment", enrollmentRouter)
+router.use("/course", jwtAuthentication, courseRouter)
+router.use("/category", jwtAuthentication, categoryRouter)
+router.use("/enrollment", jwtAuthentication, enrollmentRouter)
 
 
 

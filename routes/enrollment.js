@@ -1,15 +1,15 @@
 const express = require("express");
-const { createEnrollment } = require("../controllers/enrollment");
+const { createEnrollment, getAllEnrollments, getAEnrollment, deleteAEnrollment } = require("../controllers/enrollment");
 const enrollmentRouter = express.Router();
 
 
-enrollmentRouter.get("/",);
-enrollmentRouter.get("/:id");
+enrollmentRouter.get("/", getAllEnrollments);
+enrollmentRouter.get("/:id", getAEnrollment);
 
 enrollmentRouter.post("/", createEnrollment);
 
 enrollmentRouter.put("/:id");
-enrollmentRouter.delete("/:id");
+enrollmentRouter.delete("/:id", deleteAEnrollment);
 
 
 

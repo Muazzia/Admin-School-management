@@ -16,7 +16,8 @@ const Enrollment = sequelize.define("Enrollment", {
         references: {
             model: Student,
             key: "id"
-        }
+        },
+        onDelete: "CASCADE",
     },
     courseId: {
         type: DataTypes.INTEGER,
@@ -24,7 +25,8 @@ const Enrollment = sequelize.define("Enrollment", {
         references: {
             model: Course,
             key: "id"
-        }
+        },
+        onDelete: "CASCADE"
     }
 });
 

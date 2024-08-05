@@ -19,7 +19,8 @@ const CourseImage = sequelize.define("CourseImage", {
         references: {
             model: Course,
             key: "id"
-        }
+        },
+        onDelete: "CASCADE"
     }
 }, {
     timestamps: false

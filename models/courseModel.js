@@ -28,7 +28,8 @@ const Course = sequelize.define('Course', {
         references: {
             model: CourseCategory,
             key: 'id'
-        }
+        },
+        onDelete: "CASCADE"
     }
 });
 

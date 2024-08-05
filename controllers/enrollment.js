@@ -19,26 +19,5 @@ const createEnrollment = async (req, res) => {
     return res.status(201).send(resWrapper("Enrollment created", 201, enrollment));
 }
 
-// const getAllCourses = async (req, res) => {
-//     const courses = await Course.findAll({
-//         ...includeObj
-//     });
-
-//     return res.status(200).send(resWrapper("Courses Reterived", 200, courses))
-
-// }
-
-// const getACourse = async (req, res) => {
-//     const id = req.params.id;
-
-//     const course = await Course.findByPk(id, {
-//         ...includeObj
-//     });
-
-//     if (!course) return res.status(404).send(resWrapper("Course Not Found", 404, null, "Id is not valid"))
-
-//     return res.status(200).send(resWrapper("Courses Reterived", 200, course))
-
-// }
 
 module.exports = { createEnrollment }

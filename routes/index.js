@@ -10,12 +10,14 @@ const adminRouter = require("./admin");
 const courseRouter = require("./course");
 const categoryRouter = require("./category");
 const enrollmentRouter = require("./enrollment");
+const studnetRouter = require("./student");
 
 
 
 router.use("/admin", adminRouter)
 router.use("/course", jwtAuthentication, courseRouter)
 router.use("/category", jwtAuthentication, categoryRouter)
+router.use("/student", jwtAuthentication, studnetRouter)
 router.use("/enrollment", jwtAuthentication, enrollmentRouter)
 
 

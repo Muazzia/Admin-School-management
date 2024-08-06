@@ -12,7 +12,7 @@ CourseImage.belongsTo(Course, { foreignKey: "courseId" })
 
 // Course with Category 1-> 1   1<-M
 
-Course.belongsTo(CourseCategory, { foreignKey: "categoryId" });
+Course.belongsTo(CourseCategory, { foreignKey: "categoryId", as: "category" });
 CourseCategory.hasMany(Course, { foreignKey: "categoryId" });
 
 

@@ -1,6 +1,6 @@
 const express = require("express");
 const { uploadImages } = require("../middlewares/multer");
-const { createCourse, getAllCourses, getACourse } = require("../controllers/course")
+const { createCourse, getAllCourses, getACourse, deleteACourse, updateACourse } = require("../controllers/course")
 const courseRouter = express.Router();
 
 
@@ -9,8 +9,8 @@ courseRouter.get("/:id", getACourse);
 
 courseRouter.post("/", uploadImages({ fieldName: "images", isRequired: true, maxCount: 10, }), createCourse);
 
-courseRouter.put("/:id");
-courseRouter.delete("/:id");
+courseRouter.put("/:id", uploadImages({ fieldName: "images", isRequired: false, maxCount: 10 }), updateACourse);
+courseRouter.delete("/:id", deleteACourse);
 
 
 

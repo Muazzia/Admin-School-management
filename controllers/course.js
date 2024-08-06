@@ -1,4 +1,4 @@
-const { validateCreateCourse } = require("../joischemas/course");
+const { validateCreateCourse, validateUpdateCourse } = require("../joischemas/course");
 const Course = require("../models/courseModel")
 const CourseImage = require("../models/courseImageModel")
 const { resWrapper } = require("../utils");
@@ -8,7 +8,7 @@ const CourseCategory = require("../models/courseCategoryModel");
 const includeObj = {
     include: [
         { model: CourseImage, as: "images", attributes: { exclude: ["courseId"] } },
-        { model: CourseCategory }
+        { model: CourseCategory, as: "category" }
     ]
 };
 
@@ -64,4 +64,65 @@ const getACourse = async (req, res) => {
 
 }
 
-module.exports = { createCourse, getAllCourses, getACourse }
+const deleteACourse = async (req, res) => {
+    const id = req.params.id;
+
+    const course = await Course.findByPk(id, {
+        ...includeObj
+    });
+    if (!course) return res.status(404).send(resWrapper("Course Not Found", 404, null, "Id Is Not Valid"))
+
+    await course.destroy();
+
+    return res.status(200).send(resWrapper("Course Deleted", 200, course));
+}
+
+const updateACourse = async (req, res) => {
+    const id = req.params.id;
+
+    const { error, value } = validateUpdateCourse(req.body)
+    if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message));
+
+    const course = await Course.findByPk(id);
+    if (!course) return res.status(404).send(resWrapper("Course Not Found", 404, null, "Id Is Not Valid"))
+
+    // To Delete Previous Images 
+    if (value.deletedImages?.length) {
+        await CourseImage.destroy({
+            where: {
+                id: value.deletedImages,
+                courseId: id
+            }
+        });
+    }
+
+    // To Add New Images
+    if (req.files && req.files.length) {
+        const response = await uploadMultipleToCloudinary(req.files, "course");
+        if (!response.isSuccess) return res.status(400).send(resWrapper("Image upload Error. Try again", 400, "Images can't be upload at the moment try again later"))
+
+        if (response.data.length === 0) return res.status(400).send(resWrapper("Image upload Error. Try again", 400, "Images can't be upload at the moment try again later"));
+
+        const courseImages = response.data.map(url => ({
+            url,
+            courseId: course.id,
+        }));
+
+        await CourseImage.bulkCreate(courseImages);
+    }
+
+    if (value.categoryId) {
+        const category = await CourseCategory.findByPk(value.categoryId);
+        if (!category) return res.status(404).send(resWrapper("Category Dosn't Exist", 404, null, "Category Id Is Not Valid"));
+
+        await course.update({ ...value })
+    } else {
+        await course.update({ ...value });
+    }
+
+    const updatedCourse = await Course.findByPk(id, { ...includeObj })
+    return res.status(200).send(resWrapper("Course Updated", 200, updatedCourse))
+
+}
+
+module.exports = { createCourse, getAllCourses, getACourse, deleteACourse, updateACourse }

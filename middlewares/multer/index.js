@@ -34,7 +34,7 @@ const uploadImages = function ({ fieldName, isSinlge = false, maxCount = 10, isR
             }
 
             // if images are not required
-            if (!isRequired) next()
+            if (!isRequired) return next()
 
 
             if (!isSinlge) {

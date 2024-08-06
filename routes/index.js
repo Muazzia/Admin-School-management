@@ -28,7 +28,7 @@ router.use("/attendance", jwtAuthentication, attendanceRouter)
 // Global Catch
 router.use((err, req, res, next) => {
     console.log(err)
-    res.status(500).send(resWrapper("Internal Server Error", 500, null, err))
+    return res.status(500).send(resWrapper("Internal Server Error", 500, null, err))
 })
 
 

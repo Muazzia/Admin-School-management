@@ -1,6 +1,7 @@
 const { resWrapper } = require("../utils");
 const Student = require("../models/studentModel");
 const { validateCreateStudent } = require("../joischemas/student");
+const { Op } = require("sequelize");
 
 const calculateAge = (dob) => {
     const today = new Date();
@@ -34,7 +35,24 @@ const createStudent = async (req, res) => {
 }
 
 const getAllStudents = async (req, res) => {
-    const students = await Student.findAll();
+    let students;
+    const query = req.query;
+    if (Object.keys(query).length === 0) {
+        const where = {};
+        const attributes = Object.keys(Student.getAttributes())
+
+        Object.keys(query).forEach((key) => {
+            if (attributes.includes(key)) {
+                where[key] = {
+                    [Op.like]: `%${query[key]}%`
+                };
+            }
+        });
+        students = await Student.findAll({ where });
+    } else {
+        students = await Student.findAll()
+    }
+
 
     return res.status(200).send(resWrapper("All Students", 200, students));
 }

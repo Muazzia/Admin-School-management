@@ -8,9 +8,9 @@ const CourseImage = require("../models/courseImageModel");
 
 const includeObj = {
     include: [
-        { model: Student },
+        { model: Student, as: "student" },
         {
-            model: Course, include: [{
+            model: Course, as: "course", include: [{
                 model: CourseImage, as: "images", attributes: {
                     exclude: ["courseId"]
                 }

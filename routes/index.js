@@ -11,6 +11,8 @@ const courseRouter = require("./course");
 const categoryRouter = require("./category");
 const enrollmentRouter = require("./enrollment");
 const studnetRouter = require("./student");
+const attendanceRouter = require("./attendance");
+
 
 
 
@@ -19,6 +21,7 @@ router.use("/course", jwtAuthentication, courseRouter)
 router.use("/category", jwtAuthentication, categoryRouter)
 router.use("/student", jwtAuthentication, studnetRouter)
 router.use("/enrollment", jwtAuthentication, enrollmentRouter)
+router.use("/attendance", jwtAuthentication, attendanceRouter)
 
 
 

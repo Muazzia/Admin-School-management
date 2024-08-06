@@ -1,10 +1,11 @@
+const Attendance = require("../models/attendance");
 const CourseCategory = require("../models/courseCategoryModel");
 const CourseImage = require("../models/courseImageModel");
 const Course = require("../models/courseModel");
 const Enrollment = require("../models/enrollment");
 const Student = require("../models/studentModel");
 
-// // Course with CourseImage 1->M
+// // Course with CourseImage 1->M 1<-M
 
 Course.hasMany(CourseImage, { foreignKey: "courseId", as: "images" });
 CourseImage.belongsTo(Course, { foreignKey: "courseId" })
@@ -22,6 +23,14 @@ Student.belongsToMany(Course, { through: Enrollment, foreignKey: "studentId" });
 Course.belongsToMany(Student, { through: Enrollment, foreignKey: "courseId" });
 
 
-Enrollment.belongsTo(Student, { foreignKey: 'studentId' });
-Enrollment.belongsTo(Course, { foreignKey: 'courseId' });
+// Enrollment With Student And Course
+Enrollment.belongsTo(Student, { foreignKey: 'studentId', as: "student" });
+Enrollment.belongsTo(Course, { foreignKey: 'courseId', as: "course" });
+
+
+// Attendance With Student 1->M 1<-M
+Attendance.belongsTo(Enrollment, { foreignKey: "enrollmentId", as: "enrollment" });
+Enrollment.hasMany(Attendance, { foreignKey: "enrollmentId" });
+
+
 

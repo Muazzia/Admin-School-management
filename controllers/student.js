@@ -2,6 +2,19 @@ const { resWrapper } = require("../utils");
 const Student = require("../models/studentModel");
 const { validateCreateStudent } = require("../joischemas/student");
 
+const calculateAge = (dob) => {
+    const today = new Date();
+    const birthDate = new Date(dob);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+
+    // adjust age based on month and day of birthdate
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+};
 
 const createStudent = async (req, res) => {
     const { error, value } = validateCreateStudent(req.body)
@@ -14,8 +27,9 @@ const createStudent = async (req, res) => {
     })
     if (prevStudent) return res.status(400).send(resWrapper("Student With Email Already Exist", 400, null, "Email Is Not Valid"))
 
+    const age = calculateAge(value.dob);
 
-    const student = await Student.create({ ...value });
+    const student = await Student.create({ ...value, age: age });
     return res.status(201).send(resWrapper("Enrollment created", 201, student));
 }
 

@@ -4,6 +4,8 @@ const CourseImage = require("../models/courseImageModel")
 const { resWrapper } = require("../utils");
 const { uploadMultipleToCloudinary } = require("../utils/cloudinary");
 const CourseCategory = require("../models/courseCategoryModel");
+const Enrollment = require("../models/enrollment");
+const Student = require("../models/studentModel");
 
 const includeObj = {
     include: [
@@ -125,4 +127,30 @@ const updateACourse = async (req, res) => {
 
 }
 
-module.exports = { createCourse, getAllCourses, getACourse, deleteACourse, updateACourse }
+const getAllStudentsOfACourse = async (req, res) => {
+    const id = req.params.id;
+
+    const course = await Course.findByPk(id);
+    if (!course) return res.status(404).send(resWrapper("Course Not Found", 404, null, "Id Is Not Valid"))
+
+    const allStudents = await Enrollment.findAll({
+        where: {
+            courseId: id
+        },
+        include: [
+            { model: Student, as: "student" },
+            {
+                model: Course, as: "course", include: [{
+                    model: CourseImage, as: "images", attributes: {
+                        exclude: ["courseId"]
+                    }
+                }]
+            }
+        ]
+    });
+
+    return res.status(200).send(resWrapper("All Students Of Course", 200, allStudents))
+
+}
+
+module.exports = { createCourse, getAllCourses, getACourse, deleteACourse, updateACourse, getAllStudentsOfACourse }

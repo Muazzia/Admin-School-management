@@ -9,7 +9,7 @@ adminRouter.get("/",);
 adminRouter.get("/:id",);
 
 adminRouter.post("/login", login)
-adminRouter.post("/", uploadImages({ fieldName: "image", isSinlge: true, isRequired: true }), createAdmin);
+adminRouter.post("/", uploadImages({ fieldName: "image", isSinlge: true }), createAdmin);
 
 adminRouter.put("/:id");
 adminRouter.delete("/:id");

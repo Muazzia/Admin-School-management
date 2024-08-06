@@ -140,11 +140,16 @@ const getAllStudentsOfACourse = async (req, res) => {
         include: [
             { model: Student, as: "student" },
             {
-                model: Course, as: "course", include: [{
-                    model: CourseImage, as: "images", attributes: {
-                        exclude: ["courseId"]
+                model: Course, as: "course", include: [
+                    {
+                        model: CourseImage, as: "images", attributes: {
+                            exclude: ["courseId"]
+                        }
+                    },
+                    {
+                        model: CourseCategory, as: "category"
                     }
-                }]
+                ]
             }
         ]
     });

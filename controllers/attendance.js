@@ -6,13 +6,26 @@ const Attendance = require("../models/attendance")
 const Student = require("../models/studentModel");
 const Course = require("../models/courseModel");
 const { Op } = require("sequelize");
+const CourseImage = require("../models/courseImageModel");
+const CourseCategory = require("../models/courseCategoryModel");
 
 const includeObj = {
     include: [
         {
             model: Enrollment, as: "enrollment", include: [
                 { model: Student, as: "student" },
-                { model: Course, as: "course" }
+                {
+                    model: Course, as: "course", include: [
+                        {
+                            model: CourseImage, as: "images", attributes: {
+                                exclude: ["courseId"]
+                            }
+                        },
+                        {
+                            model: CourseCategory, as: "category"
+                        }
+                    ]
+                }
             ]
         }
     ]

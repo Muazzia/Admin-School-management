@@ -9,6 +9,12 @@ const createCategory = async (req, res) => {
 
     if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message));
 
+    const prevCat = await CourseCategory.findOne({
+        where: {
+            title: value.title
+        }
+    });
+    if (prevCat) return res.status(400).send(resWrapper("Category Already Exist", 400, null, "Can Add Already Created Category"))
 
     const category = await CourseCategory.create({ ...value });
 

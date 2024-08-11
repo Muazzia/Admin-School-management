@@ -1,5 +1,5 @@
-const { validateCreateAttendance, validateUpdateAttendance } = require("../joischemas/attendance");
-const { resWrapper } = require("../utils");
+const { validateCreateAttendance, validateUpdateAttendance, validateUniqueStudentInQuater } = require("../joischemas/attendance");
+const { resWrapper, getQuarterDates } = require("../utils");
 
 const Enrollment = require("../models/enrollment");
 const Attendance = require("../models/attendance")
@@ -167,6 +167,62 @@ const getAllAttendanceOfAStudentWithCourse = async (req, res) => {
     return res.status(200).send(resWrapper("All Attendances", 200, attendance))
 }
 
+const getAllAttendanceOfAStudent = async (req, res) => {
+    const studentId = req.params.studentId;
+
+    const student = await Student.findByPk(studentId);
+    if (!student) return res.status(404).send(resWrapper("Student Not Found", 404, null, "Student Id Is Not Valid"));
+
+    const attendance = await Attendance.findAll({
+        include: [
+            {
+                model: Enrollment, as: "enrollment", where: {
+                    studentId
+                },
+                include: [
+                    { model: Student, as: "student" },
+                    { model: Course, as: "course" }
+                ]
+            }
+        ]
+    });
+
+    return res.status(200).send(resWrapper("All Attendances", 200, attendance))
+}
+
+const getUniqueStudnetInQuater = async (req, res) => {
+    const { error, value } = validateUniqueStudentInQuater(req.params)
+    if (error) return res.status(200).send(resWrapper(error.message, 400, null, error.message));
+
+    const { startDate, endDate } = getQuarterDates(value.quater)
+
+    console.log(startDate, endDate, value.quater)
+
+    const uniqueStudents = await Student.findAndCountAll({
+        // attributes: ['id', 'firstName', 'lastName'],
+        include: [{
+            model: Enrollment,
+            // attributes: [],
+            as: "enrollments",
+            required: true,  // Forces INNER JOIN instead of LEFT OUTER JOIN
+            include: [{
+                model: Attendance,
+                // attributes: [],
+                where: {
+                    date: {
+                        [Op.between]: [startDate, endDate],
+                    },
+                    isPresent: true,
+                },
+                required: true,  // Ensures only enrollments with matching attendance are included
+            }, { model: Course, as: "course", include: [{ model: CourseCategory, as: "category" }] }],
+        }],
+        distinct: true,
+    });
+
+    return res.status(200).send(resWrapper("Date Received", 200, uniqueStudents));
+}
+
 // const deleteAEnrollment = async (req, res) => {
 //     const id = req.params.id;
 
@@ -180,4 +236,4 @@ const getAllAttendanceOfAStudentWithCourse = async (req, res) => {
 //     return res.status(200).send(resWrapper("Enrollment Deleted", 200, enrollment));
 // }
 
-module.exports = { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse }
+module.exports = { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater }

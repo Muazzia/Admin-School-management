@@ -26,4 +26,10 @@ const updateAttendanceSchema = Joi.object({
 const validateUpdateAttendance = (body) => updateAttendanceSchema.validate(body)
 
 
-module.exports = { validateCreateAttendance, validateUpdateAttendance }
+const getUniqueStudentInQuaterSchema = Joi.object({
+    quater: Joi.string().valid("Q1", "Q2", "Q3", "Q4").required()
+});
+
+const validateUniqueStudentInQuater = (body) => getUniqueStudentInQuaterSchema.validate(body)
+
+module.exports = { validateCreateAttendance, validateUpdateAttendance, validateUniqueStudentInQuater }

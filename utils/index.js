@@ -15,24 +15,24 @@ const resWrapper = (message, status, data, error = null) => {
 };
 
 
-const getQuarterDates = (quarter) => {
+const getQuarterDates = (quarter, year = new Date().getFullYear()) => {
     let startDate, endDate;
     switch (quarter) {
         case 'Q1':
-            startDate = new Date('2024-01-01');
-            endDate = new Date('2024-03-31');
+            startDate = new Date(`${year}-01-01`);
+            endDate = new Date(`${year}-03-31`);
             break;
         case 'Q2':
-            startDate = new Date('2024-04-01');
-            endDate = new Date('2024-06-30');
+            startDate = new Date(`${year}-04-01`);
+            endDate = new Date(`${year}-06-30`);
             break;
         case 'Q3':
-            startDate = new Date('2024-07-01');
-            endDate = new Date('2024-09-30');
+            startDate = new Date(`${year}-07-01`);
+            endDate = new Date(`${year}-09-30`);
             break;
         case 'Q4':
-            startDate = new Date('2024-10-01');
-            endDate = new Date('2024-12-31');
+            startDate = new Date(`${year}-10-01`);
+            endDate = new Date(`${year}-12-31`);
             break;
         default:
             startDate = null;

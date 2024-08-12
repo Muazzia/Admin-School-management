@@ -32,4 +32,14 @@ const getUniqueStudentInQuaterSchema = Joi.object({
 
 const validateUniqueStudentInQuater = (body) => getUniqueStudentInQuaterSchema.validate(body)
 
-module.exports = { validateCreateAttendance, validateUpdateAttendance, validateUniqueStudentInQuater }
+const yearSchema = Joi.object({
+    year: Joi.number()
+        .integer()
+        .min(1900) // Minimum valid year
+        .max(new Date().getFullYear()) // Maximum is the current year
+        .required() // Ensure year is required, remove this line if not needed
+});
+
+const validateYear = (body) => yearSchema.validate(body)
+
+module.exports = { validateCreateAttendance, validateUpdateAttendance, validateUniqueStudentInQuater, validateYear }

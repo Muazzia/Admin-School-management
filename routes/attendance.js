@@ -1,7 +1,7 @@
 const express = require("express");
 const attendanceRouter = express.Router();
 
-const { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater } = require("../controllers/attendance");
+const { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater, getNewStudnetInQuater } = require("../controllers/attendance");
 
 
 attendanceRouter.get("/", getAllAttendance);
@@ -20,11 +20,14 @@ attendanceRouter.get("/course/:courseId", getAllAttendanceOfACourse)
 attendanceRouter.get("/course/:courseId/student/:studentId", getAllAttendanceOfAStudentWithCourse)
 
 
+// Excel Sheet Routes
+
 // get All attendance of a Student
 attendanceRouter.get("/student/:studentId", getAllAttendanceOfAStudent)
-
-// get Uniquer Students In A Quater
-attendanceRouter.get("/unique-student/:quater", getUniqueStudnetInQuater)
+// get Unique Students In A Quater
+attendanceRouter.get("/unique-students/:quater", getUniqueStudnetInQuater)
+// get Students in quater who were not in the previouse quaters(new students)
+attendanceRouter.get("/new-students/:quater", getNewStudnetInQuater)
 
 
 

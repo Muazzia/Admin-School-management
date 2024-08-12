@@ -1,4 +1,4 @@
-const { validateCreateAttendance, validateUpdateAttendance, validateUniqueStudentInQuater } = require("../joischemas/attendance");
+const { validateCreateAttendance, validateUpdateAttendance, validateUniqueStudentInQuater, validateYear } = require("../joischemas/attendance");
 const { resWrapper, getQuarterDates } = require("../utils");
 
 const Enrollment = require("../models/enrollment");
@@ -196,8 +196,6 @@ const getUniqueStudnetInQuater = async (req, res) => {
 
     const { startDate, endDate } = getQuarterDates(value.quater)
 
-    console.log(startDate, endDate, value.quater)
-
     const uniqueStudents = await Student.findAndCountAll({
         // attributes: ['id', 'firstName', 'lastName'],
         include: [{
@@ -223,6 +221,78 @@ const getUniqueStudnetInQuater = async (req, res) => {
     return res.status(200).send(resWrapper("Date Received", 200, uniqueStudents));
 }
 
+const getNewStudnetInQuater = async (req, res) => {
+    const { error, value } = validateUniqueStudentInQuater(req.params)
+    if (error) return res.status(200).send(resWrapper(error.message, 400, null, error.message));
+
+    let newStartDate = null;
+    let newEndDate = null;
+
+    // Idhr say krna ha start or end laini ha
+    const { year } = req.query
+    if (year) {
+        const { error } = validateYear({ year });
+        if (error) return res.status(400).send(resWrapper(error.message, 400, null, error.message))
+
+        const { startDate, endDate } = getQuarterDates(value.quater, year);
+        newStartDate = startDate;
+        newEndDate = endDate;
+        // [startDate, endDate] = result;
+    } else {
+        const { endDate, startDate } = getQuarterDates(value.quater);
+        newStartDate = startDate;
+        newEndDate = endDate;
+    }
+
+    // let uniqueStudents;
+    let date
+    if (value.quater === "Q1") {
+        date = {
+            where: {
+                date: {
+                    [Op.between]: [newStartDate, newEndDate],
+                },
+                isPresent: true,
+            },
+        }
+
+    } else {
+        date = {
+            [Op.and]: [
+                {
+                    [Op.between]: [newStartDate, newEndDate] // Date between start and end date
+                },
+                {
+                    [Op.notBetween]: ['2024-01-01', newStartDate] // Date not between January 1, 2024 and start date
+                }
+            ]
+        }
+    }
+
+    newStudents = await Student.findAndCountAll({
+        // attributes: ['id', 'firstName', 'lastName'],
+        include: [{
+            model: Enrollment,
+            // attributes: [],
+            as: "enrollments",
+            required: true,  // Forces INNER JOIN instead of LEFT OUTER JOIN
+            include: [{
+                model: Attendance,
+                // attributes: [],
+                where: {
+                    date: date,
+                    isPresent: true,
+                },
+                required: true,  // Ensures only enrollments with matching attendance are included
+            }, { model: Course, as: "course", include: [{ model: CourseCategory, as: "category" }] }],
+        }],
+        distinct: true,
+    });
+
+    return res.status(200).send(resWrapper("Date Received", 200, newStudents));
+
+}
+
 // const deleteAEnrollment = async (req, res) => {
 //     const id = req.params.id;
 
@@ -236,4 +306,4 @@ const getUniqueStudnetInQuater = async (req, res) => {
 //     return res.status(200).send(resWrapper("Enrollment Deleted", 200, enrollment));
 // }
 
-module.exports = { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater }
+module.exports = { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater, getNewStudnetInQuater }

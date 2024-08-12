@@ -1,7 +1,7 @@
 const express = require("express");
 const attendanceRouter = express.Router();
 
-const { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater, getNewStudnetInQuater } = require("../controllers/attendance");
+const { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater, getNewStudnetInQuater, getAllAttendanceOfAQuater } = require("../controllers/attendance");
 
 
 attendanceRouter.get("/", getAllAttendance);
@@ -28,6 +28,8 @@ attendanceRouter.get("/student/:studentId", getAllAttendanceOfAStudent)
 attendanceRouter.get("/unique-students/:quater", getUniqueStudnetInQuater)
 // get Students in quater who were not in the previouse quaters(new students)
 attendanceRouter.get("/new-students/:quater", getNewStudnetInQuater)
+// get All Attendace of a Quater
+attendanceRouter.get("/all-students/:quater", getAllAttendanceOfAQuater)
 
 
 

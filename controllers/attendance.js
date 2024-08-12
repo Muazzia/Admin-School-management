@@ -293,6 +293,25 @@ const getNewStudnetInQuater = async (req, res) => {
 
 }
 
+const getAllAttendanceOfAQuater = async (req, res) => {
+    const { error, value } = validateUniqueStudentInQuater(req.params)
+    if (error) return res.status(200).send(resWrapper(error.message, 400, null, error.message));
+
+    const { startDate, endDate } = getQuarterDates(value.quater)
+
+    const attendaces = await Attendance.findAndCountAll({
+        where: {
+            date: {
+                [Op.between]: [startDate, endDate],
+            },
+            isPresent: true
+        },
+        ...includeObj
+    });
+
+    return res.status(200).send(resWrapper("All Attendance Reterived", 200, attendaces))
+}
+
 // const deleteAEnrollment = async (req, res) => {
 //     const id = req.params.id;
 
@@ -306,4 +325,4 @@ const getNewStudnetInQuater = async (req, res) => {
 //     return res.status(200).send(resWrapper("Enrollment Deleted", 200, enrollment));
 // }
 
-module.exports = { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater, getNewStudnetInQuater }
+module.exports = { createAttendance, getAllAttendance, getAAttendance, updateAttendance, getAllAttendanceOfACourse, getAllAttendanceOfAStudentWithCourse, getAllAttendanceOfAStudent, getUniqueStudnetInQuater, getNewStudnetInQuater, getAllAttendanceOfAQuater }

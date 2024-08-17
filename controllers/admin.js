@@ -36,7 +36,7 @@ const createAdmin = async (req, res) => {
         ...includeObj
     });
 
-    return res.status(201).send(resWrapper("Course Created", 201, temp))
+    return res.status(201).send(resWrapper("Admin Created", 201, temp))
 }
 
 
